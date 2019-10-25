@@ -1,0 +1,12 @@
+<div class="site-post-header px2 px-responsive">
+  <div class="wrap">
+    <div class="measure">
+      <a href="{{ "/" | relative_url }}" class="site-title">{{ site.title }}</a>
+      <span class="site-subtitle">{{ site.description }}</span>
+      <div class="clearfix"></div>
+      {% if site.show_social_icons %}
+        {% include social_links.html %}
+      {% endif %}
+    </div>
+  </div>
+</div>
