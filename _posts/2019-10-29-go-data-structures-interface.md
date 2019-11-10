@@ -45,10 +45,10 @@ func ToString(i interface{}) string {
         return s.String()
     }
     switch s := i.(type) {
-        case int:
-            return strconv.Itoa(s)
-        case float:
-		    return strconv.FormatFloat(s, 'g', -1, 64)
+    case int:
+        return strconv.Itoa(s)
+    case float:
+        return strconv.FormatFloat(s, 'g', -1, 64)
     }
     return "???"
 }
@@ -61,21 +61,21 @@ Here is another example, a type with a `String` method which returns the string 
 type index uint64
 
 func (i index) String() string {
-	return fmt.Sprintf("%d", uint64(i))
+    return fmt.Sprintf("%d", uint64(i))
 }
 
 type Pos struct {
-	x index
-	y index
+    x index
+    y index
 }
 
 func (p Pos) String() string {
-	x, y := p.Get()
-	return fmt.Sprintf("(x:%d, y:%d)", x, y)
+    x, y := p.Get()
+    return fmt.Sprintf("(x:%d, y:%d)", x, y)
 }
 
 func (p Pos) Get() (uint64, uint64) {
-	return uint64(p.x), uint64(p.y)
+    return uint64(p.x), uint64(p.y)
 }
 ```
 A value of type `Pos` can be passed to `ToString`, and its `String` method will be called to format a string to return. The runtime knows that `Pos` has a `String` method, so it **implements** the `Stringer` interface.
@@ -97,7 +97,7 @@ A Interface value is composed of a 2-word pair holding one pointer to the inform
 
 The first word in the interface value points to an interface table, or itable. The itable starts with metadata about the type involved followed by a list of function pointers. Note that the itable corresponds to the **interface type**, not the **dynamic type**. In the example above, the itable for `Stringer` contains the methods used to satisfy `Stringer` which is just **Pos's** String, and Pos's other method (Get) make no appearance in the itable.
 
-The second word in the interface value points to the actual data, in the case above a copy of `p`. The assignment `var s Stringer = p` makes a copy of `p`: if b later changes, `s` is supposed to have the original value, not the new one. Values stored in interfaces might be large, but only one word is used to hold the value in the interface structure, so the assignment allocates a chunk of memory on the heap and records the pointer in the one-word slot.
+The second word in the interface value points to the actual data, in the case above a copy of `p`. The assignment `var s Stringer = p` makes a copy of `p`: if `p` later changes, `s` is supposed to have the original value. Values stored in interfaces might be arbitrary large, and only one word is used to hold the value in the interface structure, so the assignment allocates a chunk of memory on the heap and records the pointer in the one-word slot.
 
 To check whether an interface value holds a particular type, as in the type switch above, the compiler generates code equivalent to the C expression `s.tab->type` to obtain the type pointer and check it against the desired type. If the types match, the value can be copied by dereferencing `s.data`.
 
@@ -117,7 +117,7 @@ If the interface type involved is empty, containing no methods, then the itable 
 
 ![](/images/go-data-structures-interface/PH_003.png)
 
-If the value associated with the interface fit in one single word, there is no need to use indirection. The value will be stored in the second word of the interface value.
+If the value associated with the interface fit in one single word, there is no need to use indirection. The value will be stored in the second word of the interface value. Consider the `index` defined above, it's just a 64-bit integer:
 
 ![](/images/go-data-structures-interface/PH_004.png)
 
